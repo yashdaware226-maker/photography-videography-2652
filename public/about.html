@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About Yash Sanjay Daware — The Cre8ive YD · Kalyan, Mumbai</title>
+  <meta name="description" content="Meet Yash Sanjay Daware, founder of The Cre8ive YD — a wedding photographer and filmmaker from Kalyan, Mumbai, shooting weddings since 2019 with 200+ weddings captured." />
+  <link rel="icon" href="/assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Manrope:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav" id="top">
+    <a href="/" class="nav__brand" aria-label="The Cre8ive YD — home">
+      <img src="/assets/logo-light.png" alt="" width="44" height="44" />
+      <span>The Cre8ive <b>YD</b></span>
+    </a>
+    <nav class="nav__links" aria-label="Main">
+      <a href="/about" aria-current="page">About</a>
+      <a href="/#work">Work</a>
+      <a href="/#services">Services</a>
+      <a href="/#drone">Drone</a>
+      <a href="/#process">Process</a>
+      <a href="/#contact" class="nav__cta">Book a date</a>
+    </nav>
+    <button class="nav__toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+  </header>
+
+  <main>
+    <section class="about">
+      <figure class="about__photo reveal" style="--d:.1s">
+        <img src="/assets/yash.avif" alt="Portrait of Yash Sanjay Daware, founder of The Cre8ive YD" fetchpriority="high" />
+        <figcaption>Yash Sanjay Daware · Founder &amp; lead photographer</figcaption>
+      </figure>
+      <div class="about__text">
+        <p class="eyebrow reveal" style="--d:.2s">About me</p>
+        <h1 class="display reveal" style="--d:.3s">Hi, I'm Yash.<br /><em>I tell wedding stories.</em></h1>
+        <p class="lede reveal" style="--d:.4s">I'm Yash Sanjay Daware, the photographer and filmmaker behind The Cre8ive YD. I'm from Kalyan, Mumbai, and I've been shooting weddings since 2019.</p>
+        <p class="reveal" style="--d:.5s">Since then I've covered more than 200 weddings: big celebrations and small family functions, haldi mornings and late-night sangeets. Each one taught me the same thing. The best moments aren't posed. They happen between the rituals, and my job is to be ready for them.</p>
+        <p class="reveal" style="--d:.55s">I bring together candid photography, cinematic films and aerial drone coverage, so your whole day is told by one team with one eye for the story.</p>
+        <ul class="stats reveal" style="--d:.65s">
+          <li><b>2019</b><span>Shooting weddings since</span></li>
+          <li><b>200+</b><span>Weddings captured</span></li>
+          <li><b>Kalyan</b><span>Based in Mumbai, available across Maharashtra</span></li>
+        </ul>
+        <div class="hero__actions reveal" style="--d:.75s">
+          <a href="/#contact" class="btn">Check your date</a>
+          <a href="/#work" class="btn btn--ghost">See my work</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <img src="/assets/logo-light.png" alt="The Cre8ive YD logo" width="96" height="96" />
+    <p class="footer__name">The Cre8ive <b>YD</b></p>
+    <p>Wedding &amp; Event Photography · Cinematic Films · Aerial Drone</p>
+    <p>Kalyan, Mumbai · <a href="tel:+918452018599">+91 84520 18599</a></p>
+    <p class="footer__small">© <span id="year">2026</span> The Cre8ive YD. All rights reserved.</p>
+  </footer>
+
+    <a class="wa" href="https://wa.me/918452018599" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.6c-2 0-4-.6-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6Zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.7 8.7 0 0 1-4.3-3.7c-.3-.6.3-.5 1-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.9 1 3.9.8a3.4 3.4 0 0 0 2.2-1.6 2.8 2.8 0 0 0 .2-1.6c-.1-.1-.3-.2-.6-.4Z"/></svg>
+  </a>
+
+  <script>
+    (() => {
+      const nav = document.querySelector(".nav");
+      const toggle = document.querySelector(".nav__toggle");
+      const onScroll = () => nav.classList.toggle("is-scrolled", window.scrollY > 40);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      toggle.addEventListener("click", () => {
+        const open = nav.classList.toggle("is-open");
+        toggle.setAttribute("aria-expanded", open);
+        document.body.style.overflow = open ? "hidden" : "";
+      });
+      document.getElementById("year").textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>
