@@ -84,7 +84,7 @@ p { color: var(--cream-dim); }
 }
 .nav.is-scrolled { background: rgba(13, 12, 10, .78); backdrop-filter: blur(14px); padding-block: .6rem; border-bottom: 1px solid var(--line); }
 .nav__brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; font-family: var(--display); font-size: 1.25rem; }
-.nav__brand b { color: var(--marigold); font-weight: 600; }
+.nav__brand b { color: inherit; font-weight: 600; }
 .nav__links { display: flex; align-items: center; gap: 2.2rem; }
 .nav__links a { text-decoration: none; font-size: .78rem; letter-spacing: .16em; text-transform: uppercase; position: relative; }
 .nav__links a:not(.nav__cta)::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background: var(--marigold); transform: scaleX(0); transform-origin: right; transition: transform .4s var(--ease); }
@@ -101,9 +101,9 @@ p { color: var(--cream-dim); }
 /* Hero */
 .hero { position: relative; min-height: 100svh; display: grid; align-items: end; padding: 8rem var(--pad) clamp(3rem, 8vh, 6rem); overflow: hidden; }
 .hero__media { position: absolute; inset: 0; }
-.hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; transform: scale(1.12); animation: heroZoom 14s var(--ease) forwards; filter: saturate(.85) contrast(1.05); }
+.hero__media img { width: 100%; height: 100%; object-fit: cover; object-position: 35% 30%; transform: scale(1.12) translateX(2.5%); animation: heroZoom 14s var(--ease) forwards; filter: saturate(.85) contrast(1.05); }
 .hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,12,10,.55) 0%, rgba(13,12,10,.15) 35%, rgba(13,12,10,.85) 100%), radial-gradient(ellipse at 20% 80%, rgba(13,12,10,.7), transparent 60%); }
-@keyframes heroZoom { to { transform: scale(1); } }
+@keyframes heroZoom { to { transform: scale(1.06) translateX(2.5%); } }
 .hero__content { position: relative; z-index: 2; max-width: 56rem; }
 .hero .display { font-size: clamp(2.8rem, 7.5vw, 7.4rem); }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 1rem; }
@@ -244,7 +244,7 @@ section { position: relative; }
 .footer { text-align: center; padding: 5rem var(--pad) 3rem; border-top: 1px solid var(--line); }
 .footer img { margin: 0 auto 1.2rem; }
 .footer__name { font-family: var(--display); font-size: 2rem; color: var(--cream); margin: 0 0 .5rem; }
-.footer__name b { color: var(--marigold); font-weight: 600; }
+.footer__name b { color: inherit; font-weight: 600; }
 .footer p { margin: .3rem 0; }
 .footer__small { font-size: .78rem; margin-top: 2rem !important; opacity: .7; }
 
@@ -270,6 +270,28 @@ section { position: relative; }
 .thanks .eyebrow { justify-content: center; }
 .thanks p a { color: var(--marigold); }
 .thanks .btn { margin-top: 1.5rem; }
+
+/* About page */
+.about { display: grid; grid-template-columns: 1fr; gap: clamp(2.5rem, 5vw, 4.5rem); justify-items: center; padding: clamp(7rem, 12vw, 9rem) var(--pad) clamp(5rem, 10vw, 8rem); }
+.about__photo { width: 100%; max-width: 72rem; }
+.about__photo { margin: 0; position: relative; }
+.about__photo::before { content: ""; position: absolute; inset: -1rem 1rem 1rem -1rem; border: 1px solid var(--marigold); opacity: .5; pointer-events: none; }
+.about__photo img { position: relative; width: 100%; height: auto; aspect-ratio: 3 / 2; filter: saturate(.9) contrast(1.04); }
+.about__photo figcaption { font-family: var(--mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--cream-dim); margin-top: 1rem; }
+.about__text { max-width: 48rem; width: 100%; }
+.about__text .display { font-size: clamp(2.4rem, 5vw, 4.6rem); }
+.stats { list-style: none; padding: 0; margin: 2.5rem 0; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+.stats li { padding: 1.2rem 1rem 0 0; display: flex; flex-direction: column; }
+.stats b { font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 400; color: var(--marigold); line-height: 1.1; }
+.stats span { font-size: .82rem; color: var(--cream-dim); }
+.intro__more { color: var(--marigold); text-decoration: none; white-space: nowrap; }
+.intro__more:hover { text-decoration: underline; }
+@media (max-width: 960px) {
+  .about__photo::before { inset: -.6rem .6rem .6rem -.6rem; }
+}
+@media (max-width: 600px) {
+  .stats { grid-template-columns: 1fr; }
+}
 
 /* Responsive */
 @media (max-width: 960px) {
