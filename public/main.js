@@ -38,7 +38,7 @@
   setInterval(() => { alt.textContent = 110 + Math.round(Math.random() * 20); }, 1400);
 
   // Scroll reveals
-  const targets = document.querySelectorAll(".intro__logo, .intro__text, .section-head, .tile, .svc__item, .drone__text, .step, .contact__info, .form");
+  const targets = document.querySelectorAll(".intro__logo, .about--home .about__photo, .tile, .map, .form");
   targets.forEach((el) => el.classList.add("sr"));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
@@ -47,35 +47,66 @@
   }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
   targets.forEach((el) => io.observe(el));
 
-  // Portfolio filter
+  // Portfolio: filter + lightbox (delegated so Instagram tiles work too)
+  const grid = document.querySelector(".grid");
   const filterBtns = document.querySelectorAll(".filters button");
-  const tiles = document.querySelectorAll(".tile");
+  let activeFilter = "all";
+  const applyFilter = () =>
+    grid.querySelectorAll(".tile").forEach((t) => t.classList.toggle("is-hidden", activeFilter !== "all" && t.dataset.cat !== activeFilter));
   filterBtns.forEach((btn) =>
     btn.addEventListener("click", () => {
       filterBtns.forEach((b) => { b.classList.toggle("is-active", b === btn); b.setAttribute("aria-selected", b === btn); });
-      const f = btn.dataset.filter;
-      tiles.forEach((t) => t.classList.toggle("is-hidden", f !== "all" && t.dataset.cat !== f));
+      activeFilter = btn.dataset.filter;
+      applyFilter();
     })
   );
 
-  // Lightbox
   const lb = document.querySelector(".lightbox");
   const lbImg = lb.querySelector("img");
+  const lbLink = lb.querySelector(".lightbox__ig");
   const closeLb = () => { lb.hidden = true; document.body.style.overflow = ""; };
-  tiles.forEach((t) => {
-    t.tabIndex = 0;
-    const open = () => {
-      const img = t.querySelector("img");
-      lbImg.src = img.src.replace(/w=\d+/, "w=2000");
-      lbImg.alt = img.alt;
-      lb.hidden = false;
-      document.body.style.overflow = "hidden";
-    };
-    t.addEventListener("click", open);
-    t.addEventListener("keydown", (e) => { if (e.key === "Enter") open(); });
-  });
-  lb.addEventListener("click", (e) => { if (e.target !== lbImg) closeLb(); });
+  const openTile = (t) => {
+    const img = t.querySelector("img");
+    lbImg.src = img.src.includes("images.unsplash.com") ? img.src.replace(/w=\d+/, "w=2000") : img.src;
+    lbImg.alt = img.alt;
+    lbLink.hidden = !t.dataset.permalink;
+    if (t.dataset.permalink) lbLink.href = t.dataset.permalink;
+    lb.hidden = false;
+    document.body.style.overflow = "hidden";
+  };
+  const prepTiles = () => grid.querySelectorAll(".tile").forEach((t) => { t.tabIndex = 0; });
+  prepTiles();
+  grid.addEventListener("click", (e) => { const t = e.target.closest(".tile"); if (t) openTile(t); });
+  grid.addEventListener("keydown", (e) => { const t = e.target.closest(".tile"); if (t && e.key === "Enter") openTile(t); });
+  lb.addEventListener("click", (e) => { if (e.target !== lbImg && e.target !== lbLink) closeLb(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
+
+  // Instagram feed: replace the sample frames with the latest posts when available
+  const CATS = [
+    ["prewedding", /pre[\s-]?wedding|prewed|couple ?shoot/i, "Pre-wedding"],
+    ["wedding", /wedding|shaadi|shadi|phera|haldi|mehendi|mehndi|sangeet|bride|groom|reception|vivah|lagna/i, "Wedding"],
+    ["event", /event|birthday|engagement|ring ceremony|d[eé]cor|baby ?shower|anniversary|corporate/i, "Event"],
+  ];
+  const LAYOUT = ["tile--tall", "", "", "tile--wide", "", "tile--tall", "", "", "", "", "tile--wide"];
+  const esc = (str) => str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  fetch("/api/instagram")
+    .then((r) => (r.ok ? r.json() : { posts: [] }))
+    .then(({ posts }) => {
+      if (!posts || posts.length < 4) return;
+      grid.innerHTML = posts.map((p, i) => {
+        const cat = CATS.find(([, re]) => re.test(p.caption));
+        const title = (p.caption.split("\n")[0].replace(/#\S+/g, "").trim() || "On Instagram").slice(0, 60);
+        return `<figure class="tile tile--ig ${LAYOUT[i % LAYOUT.length]}" data-cat="${cat ? cat[0] : "other"}" data-permalink="${esc(p.permalink)}">
+          <img loading="lazy" src="${esc(p.image)}" alt="${esc(title)} — Instagram post by The Cre8ive YD" />
+          ${p.video ? '<i class="tile__play" aria-hidden="true">▶</i>' : ""}
+          <figcaption>${esc(title)} · <span>${cat ? cat[2] : "Instagram"}</span></figcaption>
+        </figure>`;
+      }).join("");
+      prepTiles();
+      applyFilter();
+      grid.querySelectorAll(".tile").forEach((t) => { t.classList.add("sr"); io.observe(t); });
+    })
+    .catch(() => {});
 
   // Enquiry form: inline validation, then AJAX submit to Netlify Forms
   const form = document.querySelector("form[name='enquiry']");
