@@ -1,0 +1,9 @@
+{
+  "name": "the-cre8ive-yd",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.7",
+    "@netlify/functions": "^6.0.3"
+  }
+}
