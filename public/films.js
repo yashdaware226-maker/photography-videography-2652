@@ -9,7 +9,9 @@
   const openEl = section.querySelector(".films__open");
   const soundBtn = section.querySelector('[data-act="sound"]');
 
-  const SHOOT = /wedd?ing|pre[\s-]?wedd?ing|prewed|shaadi|shadi|lagna|haldi|mehe?ndi|mehandi|sangeet|engagement|reception|b'?day|birthday|cinematic|film|teaser|highlight/i;
+  // Reels shot horizontally and rotated for Instagram carry #CCF; those get turned back to landscape.
+  const ROTATED = /#ccf\b/i;
+  const SHOOT = /#ccf\b|wedd?ing|pre[\s-]?wedd?ing|prewed|shaadi|shadi|lagna|haldi|mehe?ndi|mehandi|sangeet|engagement|reception|b'?day|birthday|cinematic|film|teaser|highlight/i;
   const clean = (t) => (t || "").split("\n")[0].replace(/#\S+/g, "").trim().slice(0, 80);
   const getJSON = (url, key) => fetch(url).then((r) => (r.ok ? r.json() : {})).then((d) => d[key] || []).catch(() => []);
 
@@ -54,7 +56,7 @@
       video = document.createElement("video");
       Object.assign(video, { src: it.src, muted, playsInline: true, autoplay: inView, preload: "metadata", poster: it.thumb });
       video.setAttribute("playsinline", "");
-      video.classList.add("is-rotated");
+      if (it.rotated) video.classList.add("is-rotated");
       video.addEventListener("ended", next);
       video.addEventListener("error", () => items.length > 1 && setTimeout(next, 800));
       screen.appendChild(video);
@@ -109,7 +111,7 @@
     }));
     const igItems = ig
       .filter((p) => p.videoUrl && SHOOT.test(p.caption))
-      .map((p) => ({ type: "ig", src: p.videoUrl, title: clean(p.caption), thumb: p.image, link: p.permalink }));
+      .map((p) => ({ type: "ig", src: p.videoUrl, title: clean(p.caption), thumb: p.image, link: p.permalink, rotated: ROTATED.test(p.caption) }));
     // Alternate YouTube films and Instagram reels.
     for (let i = 0; i < Math.max(ytItems.length, igItems.length); i++) {
       if (ytItems[i]) items.push(ytItems[i]);
@@ -117,7 +119,7 @@
     }
     if (!items.length) return;
     strip.innerHTML = items
-      .map((it, n) => `<button class="films__thumb" role="listitem" data-i="${n}" aria-label="Play ${it.title.replace(/"/g, "&quot;")}"><img loading="lazy" src="${it.thumb}" alt=""${it.type === "ig" ? ' class="is-rotated"' : ""} /><span>${it.type === "yt" ? "YOUTUBE" : "REEL"}</span></button>`)
+      .map((it, n) => `<button class="films__thumb" role="listitem" data-i="${n}" aria-label="Play ${it.title.replace(/"/g, "&quot;")}"><img loading="lazy" src="${it.thumb}" alt=""${it.rotated ? ' class="is-rotated"' : ""} /><span>${it.type === "yt" ? "YOUTUBE" : "REEL"}</span></button>`)
       .join("");
     strip.addEventListener("click", (e) => { const t = e.target.closest(".films__thumb"); if (t) play(+t.dataset.i); });
     section.hidden = false;
