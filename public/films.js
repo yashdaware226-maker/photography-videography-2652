@@ -105,18 +105,22 @@
 
   Promise.all([getJSON("/api/youtube", "videos"), (window.igFeed || fetch("/api/instagram").then((r) => r.json())).then((d) => d.posts || []).catch(() => [])]).then(([yt, ig]) => {
     const ytItems = yt.map((v) => ({
-      type: "yt", id: v.id, title: v.title,
+      type: "yt", id: v.id, title: v.title, kind: v.kind,
       thumb: `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,
       link: `https://www.youtube.com/watch?v=${v.id}`,
     }));
     const igItems = ig
       .filter((p) => p.videoUrl && SHOOT.test(p.caption) && !/#bts\b/i.test(p.caption))
       .map((p) => ({ type: "ig", src: p.videoUrl, title: clean(p.caption), thumb: p.image, link: p.permalink, rotated: ROTATED.test(p.caption) }));
-    // Alternate YouTube films and Instagram reels.
-    for (let i = 0; i < Math.max(ytItems.length, igItems.length); i++) {
-      if (ytItems[i]) items.push(ytItems[i]);
-      if (igItems[i]) items.push(igItems[i]);
+    // Shuffle each playlist on every visit, then alternate: pre-wedding film, wedding film, …
+    const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const pre = shuffle(ytItems.filter((v) => v.kind === "prewedding"));
+    const wed = shuffle(ytItems.filter((v) => v.kind !== "prewedding"));
+    for (let i = 0; i < Math.max(pre.length, wed.length); i++) {
+      if (pre[i]) items.push(pre[i]);
+      if (wed[i]) items.push(wed[i]);
     }
+    items.push(...igItems);
     if (!items.length) return;
     strip.innerHTML = items
       .map((it, n) => `<button class="films__thumb" role="listitem" data-i="${n}" aria-label="Play ${it.title.replace(/"/g, "&quot;")}"><img loading="lazy" src="${it.thumb}" alt=""${it.rotated ? ' class="is-rotated"' : ""} /><span>${it.type === "yt" ? "YOUTUBE" : "REEL"}</span></button>`)

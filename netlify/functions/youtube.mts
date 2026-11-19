@@ -7,6 +7,7 @@ const PLAYLISTS = [
   "PL5RPYrGhG6p1MlhZIX7j0nrXdkEdww0G3", // cinematic weddings
   "PL5RPYrGhG6p1BhlBcCHec5LRepxOklrVs", // cinematic pre-weddings
 ];
+const KINDS = ["wedding", "prewedding"];
 
 const decode = (s: string) =>
   s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
@@ -35,12 +36,11 @@ export default async () => {
     const r = await fetch(`https://www.youtube.com/feeds/videos.xml?${q}`);
     return r.ok ? r.text() : "";
   };
-  // Alternate entries from each playlist so weddings and pre-weddings mix in the showreel.
-  const lists = (await Promise.all(PLAYLISTS.map((id) => feed(`playlist_id=${id}`)))).map((x) =>
-    [...x.matchAll(/<entry>[\s\S]*?<\/entry>/g)].map((m) => m[0])
-  );
-  let xml = "";
-  for (let i = 0; i < Math.max(0, ...lists.map((l) => l.length)); i++) for (const l of lists) if (l[i]) xml += l[i];
+  // Tag each entry with its playlist; the page shuffles and alternates them.
+  const lists = await Promise.all(PLAYLISTS.map((id) => feed(`playlist_id=${id}`)));
+  let xml = lists
+    .map((x, i) => x.replace(/<entry>/g, `<entry><kind>${KINDS[i]}</kind>`))
+    .join("");
   if (!/<entry>/.test(xml)) {
     const id = await channelId();
     if (!id) return fail("Could not find YouTube channel ID");
@@ -53,6 +53,7 @@ export default async () => {
     .map(([, e]) => ({
       id: e.match(/<yt:videoId>([\w-]{11})<\/yt:videoId>/)?.[1],
       title: decode(e.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? ""),
+      kind: e.match(/<kind>(\w+)<\/kind>/)?.[1] ?? "wedding",
       short: /\/shorts\//.test(e.match(/<link rel="alternate" href="([^"]+)"/)?.[1] ?? ""),
     }))
     .filter((v) => v.id && !seen.has(v.id) && seen.add(v.id));
@@ -69,7 +70,7 @@ export default async () => {
     }
   };
   const flags = await Promise.all(entries.map(isShort));
-  const videos = entries.filter((_, i) => !flags[i]).map(({ id, title }) => ({ id, title }));
+  const videos = entries.filter((_, i) => !flags[i]).map(({ id, title, kind }) => ({ id, title, kind }));
 
   return Response.json(
     { videos },
