@@ -13,7 +13,7 @@
       box.className = "clipbox";
       box.innerHTML = '<button class="clipbox__close" aria-label="Close">×</button><div class="clipbox__media"></div><a class="btn btn--ghost clipbox__ig" target="_blank" rel="noopener">View on Instagram</a>';
       document.body.appendChild(box);
-      const close = () => { box.hidden = true; box.querySelector(".clipbox__media").innerHTML = ""; document.body.style.overflow = ""; };
+      const close = () => { box.hidden = true; box.querySelector(".clipbox__media").innerHTML = ""; document.body.style.overflow = ""; document.querySelectorAll(".clip video").forEach((v) => { const r = v.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) v.play().catch(() => {}); }); };
       box.addEventListener("click", (e) => { if (e.target === box || e.target.closest(".clipbox__close")) close(); });
       document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !box.hidden) close(); });
     }
