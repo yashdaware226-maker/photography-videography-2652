@@ -31,11 +31,11 @@
     tc.textContent = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
     requestAnimationFrame(tick);
   };
-  requestAnimationFrame(tick);
+  if (tc) requestAnimationFrame(tick);
 
   // Drone altitude drift
   const alt = document.getElementById("alt");
-  setInterval(() => { alt.textContent = 110 + Math.round(Math.random() * 20); }, 1400);
+  if (alt) setInterval(() => { alt.textContent = 110 + Math.round(Math.random() * 20); }, 1400);
 
   // Scroll reveals
   const targets = document.querySelectorAll(".intro__logo, .about--home .about__photo, .tile, .map, .form");
@@ -90,17 +90,20 @@
   ];
   const LAYOUT = ["tile--tall", "", "", "tile--wide", "", "tile--tall", "", "", "", "", "tile--wide"];
   const esc = (str) => str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  fetch("/api/instagram")
-    .then((r) => (r.ok ? r.json() : { posts: [] }))
+  // One shared Instagram request for Work, Films, Drone and BTS.
+  window.igFeed = window.igFeed || fetch("/api/instagram").then((r) => (r.ok ? r.json() : { posts: [] })).catch(() => ({ posts: [] }));
+  window.igFeed
     .then(({ posts }) => {
       const shoots = (posts || [])
+        .filter((p) => !/#bts\b/i.test(p.caption))
         .map((p) => ({ ...p, cat: CATS.find(([, re]) => re.test(p.caption)) }))
         .filter((p) => p.cat);
       if (!shoots.length) return;
       grid.innerHTML = shoots.map((p, i) => {
         const cat = p.cat;
         const title = (p.caption.split("\n")[0].replace(/#\S+/g, "").trim() || "On Instagram").slice(0, 60);
-        return `<figure class="tile tile--ig ${LAYOUT[i % LAYOUT.length]}" data-cat="${cat ? cat[0] : "other"}" data-permalink="${esc(p.permalink)}">
+        const rot = /#ccf\b/i.test(p.caption) ? " tile--rot" : "";
+        return `<figure class="tile tile--ig${rot} ${LAYOUT[i % LAYOUT.length]}" data-cat="${cat ? cat[0] : "other"}" data-permalink="${esc(p.permalink)}">
           <img loading="lazy" src="${esc(p.image)}" alt="${esc(title)} — Instagram post by The Cre8ive YD" />
           ${p.video ? '<i class="tile__play" aria-hidden="true">▶</i>' : ""}
           <figcaption>${esc(title)} · <span>${cat ? cat[2] : "Instagram"}</span></figcaption>
@@ -108,6 +111,13 @@
       }).join("");
       prepTiles();
       applyFilter();
+      // Rotated tiles swap width/height so the turned image still fills the tile.
+      const sizeRot = () => grid.querySelectorAll(".tile--rot").forEach((t) => {
+        t.style.setProperty("--rw", t.clientWidth + "px");
+        t.style.setProperty("--rh", t.clientHeight + "px");
+      });
+      sizeRot();
+      window.addEventListener("resize", sizeRot);
       grid.querySelectorAll(".tile").forEach((t) => { t.classList.add("sr"); io.observe(t); });
     })
     .catch(() => {});
@@ -155,6 +165,26 @@
       submitBtn.disabled = false;
     }
   });
+
+  // ?type=drone or ?type=realestate pre-selects the shoot type (used by the Drone page links).
+  const typeParam = new URLSearchParams(location.search).get("type");
+  const typeSel = form.querySelector("#f-type");
+  const TYPE_MAP = { drone: "Drone / aerial", realestate: "Real estate / property", wedding: "Wedding" };
+  if (typeParam && TYPE_MAP[typeParam]) {
+    typeSel.value = TYPE_MAP[typeParam];
+    if (typeParam !== "wedding") form.querySelector("input[name='want_drone']").checked = true;
+  }
+
+  // Floating WhatsApp button: wedding message by default, drone message while the Drone section is on screen.
+  const wa = document.querySelector(".wa");
+  const WA = {
+    wedding: "Hi Yash, I'd like to check availability for my wedding 💍",
+    drone: "Hi Yash, I need a drone / real estate shoot 🚁",
+  };
+  const setWA = (k) => { if (wa) wa.href = "https://wa.me/918452018599?text=" + encodeURIComponent(WA[k]); };
+  document.querySelectorAll("[data-wa]").forEach((sec) =>
+    new IntersectionObserver(([e]) => setWA(e.isIntersecting ? sec.dataset.wa : "wedding"), { threshold: 0.3 }).observe(sec)
+  );
 
   document.getElementById("year").textContent = new Date().getFullYear();
 })();

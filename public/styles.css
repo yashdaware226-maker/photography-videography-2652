@@ -402,3 +402,191 @@ section { position: relative; }
 }
 .films__screen video.is-rotated { object-fit: cover; }
 .films__thumb img.is-rotated { position: absolute; }
+
+/* ---------- Drone & real estate ---------- */
+.drone__types { list-style: none; padding: 0; margin: 1.6rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.drone__types li { padding: .45rem .95rem; border: 1px solid var(--line); border-radius: 999px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--cream); }
+.drone__types li:nth-child(2) { border-color: var(--marigold); color: var(--marigold); }
+.drone__actions { margin-top: 2rem; }
+.drone__feed { padding: clamp(1.5rem, 3vw, 2.5rem) var(--pad) clamp(4rem, 8vw, 6rem); background: var(--ink-2); }
+.drone__feed[hidden], .dpage__feed[hidden], .bts[hidden] { display: none; }
+
+/* Shared Instagram clip grid (drone + BTS) */
+.feed-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(.5rem, 1vw, .9rem); }
+.clip { position: relative; display: block; aspect-ratio: 4 / 5; padding: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--ink-3, #1a1815); cursor: pointer; color: var(--cream); }
+.clip img, .clip video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.clip:hover img, .clip:hover video { transform: scale(1.05); }
+.clip--rot video, .clip--rot img { inset: auto; left: 50%; top: 50%; width: 125%; height: 80%; transform: translate(-50%, -50%) rotate(-90deg); }
+.clip--rot:hover video, .clip--rot:hover img { transform: translate(-50%, -50%) rotate(-90deg) scale(1.05); }
+.clip__play { position: absolute; top: .6rem; right: .6rem; width: 1.8rem; height: 1.8rem; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: .6rem; background: rgba(13,12,10,.6); }
+.clip__cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 2rem .7rem .6rem; font-size: .8rem; text-align: left; background: linear-gradient(transparent, rgba(13,12,10,.85)); }
+
+/* Clip lightbox */
+.clipbox { position: fixed; inset: 0; z-index: 95; background: rgba(13,12,10,.95); display: grid; place-items: center; align-content: center; gap: 1rem; padding: 4vmin; animation: fade .3s; }
+.clipbox[hidden] { display: none; }
+.clipbox__media { width: min(92vw, 1100px); height: 78vh; display: grid; place-items: center; }
+.clipbox__media video, .clipbox__media img { max-width: 100%; max-height: 100%; object-fit: contain; background: #000; }
+.clipbox__media.is-rotated video, .clipbox__media.is-rotated img { max-width: 78vh; max-height: min(92vw, 1100px); transform: rotate(-90deg); }
+.clipbox__close { position: absolute; top: 1rem; right: 1.25rem; background: none; border: 0; color: var(--cream); font-size: 2.4rem; cursor: pointer; line-height: 1; }
+
+/* Behind the scenes */
+.bts { padding: 0 var(--pad) clamp(5rem, 10vw, 8rem); }
+.bts__lede { max-width: 34rem; margin: 1rem 0 0; }
+.bts .feed-grid, .bts__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(.5rem, 1vw, .9rem); }
+.bts .clip { aspect-ratio: 9 / 16; }
+
+/* Drone page */
+.dpage__hero { min-height: 88svh; }
+.dpage__lede { max-width: 34rem; margin-bottom: 2rem; }
+.dpage__uses, .dpage__feed { padding: clamp(5rem, 10vw, 8rem) var(--pad) 0; }
+.uses { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.uses li { background: var(--ink); padding: 2rem 1.6rem 2.4rem; }
+.uses span { font-family: var(--mono); font-size: .75rem; color: var(--marigold); }
+.uses h3 { font-family: var(--display); font-weight: 400; font-size: 1.5rem; margin: 1.2rem 0 .5rem; }
+.uses p { margin: 0; font-size: .92rem; }
+.dpage__cta { text-align: center; padding: clamp(5rem, 10vw, 8rem) var(--pad); }
+.dpage__cta p { max-width: 32rem; margin: 1rem auto 2rem; }
+.dpage__cta .hero__actions { justify-content: center; }
+
+/* ---------- Phone polish ---------- */
+@media (max-width: 960px) {
+  .feed-grid, .bts__grid { grid-template-columns: repeat(3, 1fr); }
+  .uses { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  body { overflow-x: hidden; }
+  .nav__brand span { font-size: 1.05rem; }
+  .nav__links a { font-size: 1.3rem; letter-spacing: .12em; }
+  .nav__cta { padding: .9rem 1.6rem; }
+  .hero { padding-top: 6.5rem; }
+  .hero .display { font-size: clamp(2.4rem, 11vw, 3.4rem); }
+  .hero__actions .btn { flex: 1 1 auto; text-align: center; justify-content: center; }
+  .display { word-break: normal; overflow-wrap: anywhere; }
+  .filters { gap: .4rem; }
+  .filters button { padding: .5rem .85rem; font-size: .7rem; }
+  .grid { grid-auto-rows: 140px; gap: .4rem; }
+  .feed-grid, .bts__grid { grid-template-columns: repeat(2, 1fr); gap: .4rem; }
+  .uses { grid-template-columns: 1fr; }
+  .svc__item { grid-template-columns: 2.2rem 1fr; padding: 1.5rem 0; }
+  .svc__item:hover { padding-left: 0; }
+  .drone__media { min-height: 42vh; }
+  .drone__text { padding-top: 2rem; }
+  .drone__hud { left: .75rem; bottom: .75rem; gap: .35rem; font-size: .6rem; }
+  .contact__list div { grid-template-columns: 5.5rem 1fr; }
+  .contact__list dd { font-size: 1.1rem; overflow-wrap: anywhere; }
+  .films__bar { padding: .75rem; }
+  .films__now { width: 100%; }
+  .films__controls { width: 100%; display: grid; grid-template-columns: auto 1fr auto auto; }
+  .films__btn { padding: .55rem .7rem; text-align: center; }
+  .films__thumb { flex-basis: 42vw; }
+  .marquee__track { font-size: 1.3rem; }
+  .wa { width: 52px; height: 52px; right: 1rem; bottom: 1rem; }
+  .clipbox__media { height: 70vh; }
+  .clipbox__media.is-rotated video, .clipbox__media.is-rotated img { max-width: 70vh; max-height: 92vw; }
+}
+/* The scrolled nav's backdrop-filter traps the fixed mobile menu inside the bar; drop it while open. */
+.nav.is-open { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--ink); }
+/* #CCF reels in the Work grid: turn the sideways thumbnail back. */
+.tile--rot img { position: absolute; inset: auto; left: 50%; top: 50%; width: var(--rh, 100%); height: var(--rw, 100%); transform: translate(-50%, -50%) rotate(-90deg); }
+.tile--rot:hover img { transform: translate(-50%, -50%) rotate(-90deg) scale(1.06); }
+/* Drone section: Yash's portrait photo, shown whole with a soft blurred fill on wide screens */
+.drone__media--yash { background: #6f7f92 url(/assets/yash-drone-blur.webp) center / cover; }
+.drone__media--yash::before { content: ""; position: absolute; inset: 0; backdrop-filter: blur(30px); background: rgba(60,80,105,.25); }
+.drone__media--yash img { position: relative; object-fit: contain; object-position: center; }
+.dpage__hero .hero__media img { object-position: 60% 55%; animation: none; transform: none; }
+@media (max-width: 960px) {
+  .drone__media--yash img { object-fit: cover; object-position: 55% 52%; }
+  .drone__media--yash { min-height: 70vh; }
+}
+@media (min-width: 961px) {
+  .dpage__hero .hero__media { left: 42%; }
+  .dpage__hero .hero__media img { object-position: 50% 55%; }
+  .dpage__hero .hero__media::after { background: linear-gradient(90deg, var(--ink) 0%, rgba(13,12,10,.35) 30%, rgba(13,12,10,.1) 60%, rgba(13,12,10,.6) 100%), linear-gradient(180deg, rgba(13,12,10,.4), transparent 30%, rgba(13,12,10,.7)); }
+}
+@media (max-width: 960px) {
+  .dpage__hero { min-height: 100svh; }
+  .dpage__hero .hero__media { bottom: 38%; }
+  .dpage__hero .hero__media img { object-position: 50% 40%; }
+  .dpage__hero .hero__media::after { background: linear-gradient(180deg, rgba(13,12,10,.45) 0%, transparent 20%, transparent 55%, var(--ink) 100%); }
+}
+@media (max-width: 960px) {
+  /* Lift the photo so Yash's face sits clear of the headline */
+  .dpage__hero .hero__media { top: -9%; bottom: 47%; }
+}
+@media (max-width: 960px) {
+  /* Phone: photo on top, headline below it, so nothing covers the face on any screen size */
+  .dpage__hero { display: flex; flex-direction: column; min-height: 0; padding: 0 0 3rem; }
+  .dpage__hero .hero__media { position: relative; inset: auto; top: 0; bottom: auto; width: 100%; aspect-ratio: 4 / 4.3; max-height: 70svh; }
+  .dpage__hero .hero__media img { position: absolute; inset: 0; object-position: 50% 45%; }
+  .dpage__hero .hero__content { padding: 0 var(--pad); margin-top: -2.5rem; }
+}
+/* Homepage drone photo: whole portrait in the middle, the same photo blurred to fill the sides */
+.drone__media--yash::before { display: none; }
+.drone__media--yash .drone__bg { position: absolute; inset: -8%; width: 116%; height: 116%; object-fit: cover; filter: blur(34px) saturate(1.1) brightness(.75); transform: scale(1.05); }
+.drone__media--yash .drone__photo { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; object-position: 50% 0%; filter: drop-shadow(0 20px 50px rgba(0,0,0,.45)); }
+.drone__media--yash::after { z-index: 2; pointer-events: none; }
+.drone__media--yash .drone__hud { z-index: 3; }
+@media (max-width: 960px) {
+  .drone__media--yash { min-height: 0; aspect-ratio: 4 / 4.6; }
+  .drone__media--yash .drone__photo { object-fit: cover; object-position: 50% 30%; }
+}
+@media (min-width: 961px) {
+  /* Keep the whole photo in view while the text scrolls past, with blurred sides */
+  .drone__media--yash { position: sticky; top: 0; height: 100vh; align-self: start; }
+  .drone__media--yash .drone__photo { width: 82%; margin: 0 auto; display: block; object-position: 50% 50%; }
+}
+@media (max-width: 600px) {
+  /* Tighter gap between the Services list and the drone photo on phones */
+  .services { padding-bottom: 2.5rem; }
+  .svc__item:last-child { border-bottom: 0; padding-bottom: .5rem; }
+}
+@media (max-width: 960px) {
+  /* Show the whole drone photo on phones (same shape as the photo, so nothing is cropped) */
+  .drone__media--yash { aspect-ratio: 1512 / 2016; max-height: none; }
+  .drone__media--yash .drone__photo { object-fit: cover; object-position: 50% 50%; }
+  .drone__media--yash .drone__hud { top: 4.5rem; bottom: auto; }
+}
+
+/* ---- Drone photo v3: blurred sides everywhere, HUD edge to edge ---- */
+.dpage__media { overflow: hidden; background: #55606c; }
+.dpage__media .drone__bg { position: absolute; inset: -8%; width: 116%; height: 116%; object-fit: cover; filter: blur(30px) saturate(1.2) brightness(.95); transform: scale(1.05); animation: none; }
+.dpage__media .drone__photo { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; object-position: 50% 50%; animation: none; transform: none; filter: drop-shadow(0 20px 50px rgba(0,0,0,.45)); }
+.dpage__media::after { z-index: 2; }
+.drone__hud { left: 0; right: 0; justify-content: space-between; padding: 0 var(--pad); }
+.drone__hud span { flex: 1 1 0; text-align: center; white-space: nowrap; }
+@media (max-width: 960px) {
+  .drone__media--yash, .dpage__hero .dpage__media { aspect-ratio: 1 / 1.12; max-height: none; }
+  .drone__media--yash .drone__photo, .dpage__hero .dpage__media .drone__photo { position: absolute; inset: 0; object-fit: contain; object-position: 50% 50%; }
+  .drone__hud { padding: 0 .75rem; gap: .4rem; }
+  .drone__hud span { padding: .45rem .3rem; font-size: .58rem; }
+}
+.drone__media--yash .drone__bg { filter: blur(30px) saturate(1.2) brightness(.95); }
+
+/* ---- Drone photo v4: clean photo, no HUD, no blur ---- */
+.drone__media--yash, .dpage__media { background: var(--ink-2); }
+.drone__media--yash .drone__photo, .dpage__media .drone__photo { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; object-fit: cover; object-position: 50% 55%; filter: none; }
+.drone__media--yash::after { background: linear-gradient(90deg, transparent 70%, var(--ink-2)); }
+@media (min-width: 961px) {
+  .drone__media--yash .drone__photo { width: 100%; }
+}
+@media (max-width: 960px) {
+  .drone__media--yash { aspect-ratio: 1512 / 2016; }
+  .drone__media--yash .drone__photo { object-position: 50% 50%; }
+  .drone__media--yash::after { background: linear-gradient(180deg, transparent 75%, var(--ink-2)); }
+  .dpage__hero .dpage__media { aspect-ratio: 1512 / 2016; max-height: 78svh; }
+  .dpage__hero .dpage__media .drone__photo { object-fit: cover; object-position: 50% 45%; }
+}
+@media (min-width: 961px) {
+  /* /drone page on laptop: bright photo filling the right half, like the homepage drone section */
+  .dpage__hero .hero__media { left: 50%; }
+  .dpage__hero .hero__media::after { background: linear-gradient(90deg, var(--ink) 0%, rgba(13,12,10,0) 22%), linear-gradient(180deg, rgba(13,12,10,.45) 0%, transparent 18%); }
+  .dpage__hero .dpage__media .drone__photo { object-position: 50% 55%; filter: none; }
+  .dpage__hero .hero__content { max-width: 46%; }
+}
+@media (min-width: 961px) {
+  .dpage__hero { min-height: 100vh; min-height: 100svh; }
+}
+@media (min-width: 961px) {
+  /* /drone page: headline block sits in the vertical middle instead of near the bottom */
+  .dpage__hero { align-items: center; padding-top: 6rem; padding-bottom: 6rem; }
+}

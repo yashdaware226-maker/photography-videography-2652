@@ -1,7 +1,13 @@
 import type { Config } from "@netlify/functions";
 
-// Latest videos from the studio's YouTube channel, via the public RSS feed (no API key needed).
+// Videos for the Films showreel, via YouTube's public RSS feeds (no API key needed).
+// The chosen playlists come first; the channel's latest uploads are only a fallback.
 const HANDLE = "the_cre8ive_yd";
+const PLAYLISTS = [
+  "PL5RPYrGhG6p1MlhZIX7j0nrXdkEdww0G3", // cinematic weddings
+  "PL5RPYrGhG6p1BhlBcCHec5LRepxOklrVs", // cinematic pre-weddings
+];
+const KINDS = ["wedding", "prewedding"];
 
 const decode = (s: string) =>
   s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
@@ -26,20 +32,31 @@ export default async () => {
   const fail = (error: string) =>
     Response.json({ videos: [], error }, { status: 502, headers: { "Cache-Control": "no-store" } });
 
-  const id = await channelId();
-  if (!id) return fail("Could not find YouTube channel ID");
+  const feed = async (q: string) => {
+    const r = await fetch(`https://www.youtube.com/feeds/videos.xml?${q}`);
+    return r.ok ? r.text() : "";
+  };
+  // Tag each entry with its playlist; the page shuffles and alternates them.
+  const lists = await Promise.all(PLAYLISTS.map((id) => feed(`playlist_id=${id}`)));
+  let xml = lists
+    .map((x, i) => x.replace(/<entry>/g, `<entry><kind>${KINDS[i]}</kind>`))
+    .join("");
+  if (!/<entry>/.test(xml)) {
+    const id = await channelId();
+    if (!id) return fail("Could not find YouTube channel ID");
+    xml = await feed(`channel_id=${id}`);
+    if (!xml) return fail("YouTube feed unavailable");
+  }
 
-  const res = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${id}`);
-  if (!res.ok) return fail(`YouTube feed ${res.status}`);
-  const xml = await res.text();
-
+  const seen = new Set<string>();
   const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
     .map(([, e]) => ({
       id: e.match(/<yt:videoId>([\w-]{11})<\/yt:videoId>/)?.[1],
       title: decode(e.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? ""),
+      kind: e.match(/<kind>(\w+)<\/kind>/)?.[1] ?? "wedding",
       short: /\/shorts\//.test(e.match(/<link rel="alternate" href="([^"]+)"/)?.[1] ?? ""),
     }))
-    .filter((v) => v.id);
+    .filter((v) => v.id && !seen.has(v.id) && seen.add(v.id));
 
   // Leave Shorts out of the Films showreel. The feed marks most Shorts with a /shorts/ link;
   // as a backup, youtube.com/shorts/ID answers 200 for a Short and redirects for a normal video.
@@ -53,7 +70,7 @@ export default async () => {
     }
   };
   const flags = await Promise.all(entries.map(isShort));
-  const videos = entries.filter((_, i) => !flags[i]).map(({ id, title }) => ({ id, title }));
+  const videos = entries.filter((_, i) => !flags[i]).map(({ id, title, kind }) => ({ id, title, kind }));
 
   return Response.json(
     { videos },
