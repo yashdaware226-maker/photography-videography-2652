@@ -103,14 +103,14 @@
     if (ytPlayer && ytPlayer.playVideo) inView ? ytPlayer.playVideo() : ytPlayer.pauseVideo();
   }, { threshold: 0.35 }).observe(section);
 
-  Promise.all([getJSON("/api/youtube", "videos"), getJSON("/api/instagram", "posts")]).then(([yt, ig]) => {
+  Promise.all([getJSON("/api/youtube", "videos"), (window.igFeed || fetch("/api/instagram").then((r) => r.json())).then((d) => d.posts || []).catch(() => [])]).then(([yt, ig]) => {
     const ytItems = yt.map((v) => ({
       type: "yt", id: v.id, title: v.title,
       thumb: `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`,
       link: `https://www.youtube.com/watch?v=${v.id}`,
     }));
     const igItems = ig
-      .filter((p) => p.videoUrl && SHOOT.test(p.caption))
+      .filter((p) => p.videoUrl && SHOOT.test(p.caption) && !/#bts\b/i.test(p.caption))
       .map((p) => ({ type: "ig", src: p.videoUrl, title: clean(p.caption), thumb: p.image, link: p.permalink, rotated: ROTATED.test(p.caption) }));
     // Alternate YouTube films and Instagram reels.
     for (let i = 0; i < Math.max(ytItems.length, igItems.length); i++) {
