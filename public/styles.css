@@ -540,3 +540,9 @@ section { position: relative; }
   .services { padding-bottom: 2.5rem; }
   .svc__item:last-child { border-bottom: 0; padding-bottom: .5rem; }
 }
+@media (max-width: 960px) {
+  /* Show the whole drone photo on phones (same shape as the photo, so nothing is cropped) */
+  .drone__media--yash { aspect-ratio: 1512 / 2016; max-height: none; }
+  .drone__media--yash .drone__photo { object-fit: cover; object-position: 50% 50%; }
+  .drone__media--yash .drone__hud { top: 4.5rem; bottom: auto; }
+}
