@@ -50,7 +50,12 @@
     titleEl.textContent = it.title || "The Cre8ive YD";
     openEl.href = it.link;
     strip.querySelectorAll(".films__thumb").forEach((t, n) => t.classList.toggle("is-active", n === idx));
-    strip.children[idx]?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    // Scroll only the thumbnail strip sideways; never move the page itself.
+    const th = strip.children[idx];
+    if (th) {
+      const left = strip.scrollLeft + th.getBoundingClientRect().left - strip.getBoundingClientRect().left - (strip.clientWidth - th.clientWidth) / 2;
+      strip.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+    }
 
     if (it.type === "ig") {
       video = document.createElement("video");
