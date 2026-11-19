@@ -509,3 +509,29 @@ section { position: relative; }
   .dpage__hero .hero__media img { object-position: 50% 40%; }
   .dpage__hero .hero__media::after { background: linear-gradient(180deg, rgba(13,12,10,.45) 0%, transparent 20%, transparent 55%, var(--ink) 100%); }
 }
+@media (max-width: 960px) {
+  /* Lift the photo so Yash's face sits clear of the headline */
+  .dpage__hero .hero__media { top: -9%; bottom: 47%; }
+}
+@media (max-width: 960px) {
+  /* Phone: photo on top, headline below it, so nothing covers the face on any screen size */
+  .dpage__hero { display: flex; flex-direction: column; min-height: 0; padding: 0 0 3rem; }
+  .dpage__hero .hero__media { position: relative; inset: auto; top: 0; bottom: auto; width: 100%; aspect-ratio: 4 / 4.3; max-height: 70svh; }
+  .dpage__hero .hero__media img { position: absolute; inset: 0; object-position: 50% 45%; }
+  .dpage__hero .hero__content { padding: 0 var(--pad); margin-top: -2.5rem; }
+}
+/* Homepage drone photo: whole portrait in the middle, the same photo blurred to fill the sides */
+.drone__media--yash::before { display: none; }
+.drone__media--yash .drone__bg { position: absolute; inset: -8%; width: 116%; height: 116%; object-fit: cover; filter: blur(34px) saturate(1.1) brightness(.75); transform: scale(1.05); }
+.drone__media--yash .drone__photo { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; object-position: 50% 0%; filter: drop-shadow(0 20px 50px rgba(0,0,0,.45)); }
+.drone__media--yash::after { z-index: 2; pointer-events: none; }
+.drone__media--yash .drone__hud { z-index: 3; }
+@media (max-width: 960px) {
+  .drone__media--yash { min-height: 0; aspect-ratio: 4 / 4.6; }
+  .drone__media--yash .drone__photo { object-fit: cover; object-position: 50% 30%; }
+}
+@media (min-width: 961px) {
+  /* Keep the whole photo in view while the text scrolls past, with blurred sides */
+  .drone__media--yash { position: sticky; top: 0; height: 100vh; align-self: start; }
+  .drone__media--yash .drone__photo { width: 82%; margin: 0 auto; display: block; object-position: 50% 50%; }
+}
