@@ -576,3 +576,10 @@ section { position: relative; }
   .dpage__hero .dpage__media { aspect-ratio: 1512 / 2016; max-height: 78svh; }
   .dpage__hero .dpage__media .drone__photo { object-fit: cover; object-position: 50% 45%; }
 }
+@media (min-width: 961px) {
+  /* /drone page on laptop: bright photo filling the right half, like the homepage drone section */
+  .dpage__hero .hero__media { left: 50%; }
+  .dpage__hero .hero__media::after { background: linear-gradient(90deg, var(--ink) 0%, rgba(13,12,10,0) 22%), linear-gradient(180deg, rgba(13,12,10,.45) 0%, transparent 18%); }
+  .dpage__hero .dpage__media .drone__photo { object-position: 50% 55%; filter: none; }
+  .dpage__hero .hero__content { max-width: 46%; }
+}
