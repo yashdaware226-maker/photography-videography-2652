@@ -14,18 +14,27 @@ export default async () => {
   const token = await getToken();
   if (!token) return Response.json({ posts: [] }, { headers: { "Cache-Control": "no-store" } });
 
-  const url = new URL("https://graph.instagram.com/me/media");
-  url.searchParams.set("fields", "id,caption,media_type,media_url,thumbnail_url,permalink");
-  url.searchParams.set("limit", "18");
-  url.searchParams.set("access_token", token);
+  // Fetch every post (page through the API), capped as a safety limit.
+  const MAX_POSTS = 500;
+  const data: Media[] = [];
+  const first = new URL("https://graph.instagram.com/me/media");
+  first.searchParams.set("fields", "id,caption,media_type,media_url,thumbnail_url,permalink");
+  first.searchParams.set("limit", "100");
+  first.searchParams.set("access_token", token);
+  let next: string | undefined = first.toString();
 
-  const res = await fetch(url);
-  if (!res.ok) {
-    console.error("Instagram API error", res.status, await res.text());
-    return Response.json({ posts: [] }, { status: 502, headers: { "Cache-Control": "no-store" } });
+  while (next && data.length < MAX_POSTS) {
+    const res = await fetch(next);
+    if (!res.ok) {
+      console.error("Instagram API error", res.status, await res.text());
+      if (data.length) break;
+      return Response.json({ posts: [] }, { status: 502, headers: { "Cache-Control": "no-store" } });
+    }
+    const page = (await res.json()) as { data?: Media[]; paging?: { next?: string } };
+    data.push(...(page.data ?? []));
+    next = page.paging?.next;
   }
 
-  const { data = [] } = (await res.json()) as { data?: Media[] };
   const posts = data
     .map((m) => ({
       id: m.id,
