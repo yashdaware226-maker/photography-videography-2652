@@ -33,13 +33,27 @@ export default async () => {
   if (!res.ok) return fail(`YouTube feed ${res.status}`);
   const xml = await res.text();
 
-  const videos = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
+  const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)]
     .map(([, e]) => ({
       id: e.match(/<yt:videoId>([\w-]{11})<\/yt:videoId>/)?.[1],
       title: decode(e.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? ""),
       short: /\/shorts\//.test(e.match(/<link rel="alternate" href="([^"]+)"/)?.[1] ?? ""),
     }))
     .filter((v) => v.id);
+
+  // Leave Shorts out of the Films showreel. The feed marks most Shorts with a /shorts/ link;
+  // as a backup, youtube.com/shorts/ID answers 200 for a Short and redirects for a normal video.
+  const isShort = async (v: { id?: string; short: boolean }) => {
+    if (v.short) return true;
+    try {
+      const r = await fetch(`https://www.youtube.com/shorts/${v.id}`, { method: "HEAD", redirect: "manual" });
+      return r.status === 200;
+    } catch {
+      return false;
+    }
+  };
+  const flags = await Promise.all(entries.map(isShort));
+  const videos = entries.filter((_, i) => !flags[i]).map(({ id, title }) => ({ id, title }));
 
   return Response.json(
     { videos },
