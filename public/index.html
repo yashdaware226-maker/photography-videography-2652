@@ -22,6 +22,7 @@
     <nav class="nav__links" aria-label="Main">
       <a href="#about">About</a>
       <a href="#work">Work</a>
+      <a href="#films">Films</a>
       <a href="#services">Services</a>
       <a href="#drone">Drone</a>
       <a href="#process">Process</a>
@@ -130,6 +131,27 @@
     <div class="work__more">
       <a class="btn btn--ghost" href="https://www.instagram.com/the_cre8ive_yd/" target="_blank" rel="noopener">Follow @the_cre8ive_yd on Instagram</a>
     </div>
+  </section>
+
+  <!-- FILMS -->
+  <section class="films" id="films" hidden>
+    <div class="section-head">
+      <p class="eyebrow">Now playing</p>
+      <h2 class="display">Cinematic <em>films</em></h2>
+    </div>
+    <div class="films__stage">
+      <div class="films__screen"></div>
+      <div class="films__bar">
+        <div class="films__now"><span class="films__src"></span><b class="films__title"></b></div>
+        <div class="films__controls">
+          <button class="films__btn" data-act="prev" aria-label="Previous film">&#9664;&#9664;</button>
+          <button class="films__btn" data-act="sound" aria-label="Turn sound on">&#128263; Sound</button>
+          <button class="films__btn" data-act="next" aria-label="Next film">&#9654;&#9654;</button>
+          <a class="films__btn films__open" target="_blank" rel="noopener">Watch &#8599;</a>
+        </div>
+      </div>
+    </div>
+    <div class="films__strip" role="list"></div>
   </section>
 
   <!-- SERVICES -->
@@ -304,5 +326,6 @@
   <script src="/scroll-anim.js" defer></script>
   <script src="/cursor.js" defer></script>
   <script src="/main.js" defer></script>
+  <script src="/films.js" defer></script>
 </body>
 </html>

@@ -50,6 +50,7 @@ export default async () => {
       caption: m.caption ?? "",
       image: m.media_type === "VIDEO" ? m.thumbnail_url : m.media_url,
       video: m.media_type === "VIDEO",
+      videoUrl: m.media_type === "VIDEO" ? m.media_url : undefined,
       permalink: m.permalink,
     }))
     .filter((p) => p.image);
