@@ -7,8 +7,11 @@ type StoredToken = { token: string; refreshedAt: string };
 
 // Prefer the auto-refreshed token in Blobs; fall back to the one set as an env var.
 export async function getToken(): Promise<string | null> {
+  const envToken = Netlify.env.get("INSTAGRAM_ACCESS_TOKEN")?.trim() || null;
+  // Never-expiring system-user tokens (EAA…) are used as-is from the env var.
+  if (envToken?.startsWith("EAA")) return envToken;
   const stored = (await getStore(STORE).get(TOKEN_KEY, { type: "json" })) as StoredToken | null;
-  return stored?.token || Netlify.env.get("INSTAGRAM_ACCESS_TOKEN") || null;
+  return stored?.token || envToken;
 }
 
 export async function saveToken(token: string) {

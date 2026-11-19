@@ -12,7 +12,7 @@ type Media = {
 
 export default async () => {
   const token = await getToken();
-  if (!token) return Response.json({ posts: [] }, { headers: { "Cache-Control": "no-store" } });
+  if (!token) return Response.json({ posts: [], error: "No INSTAGRAM_ACCESS_TOKEN set" }, { headers: { "Cache-Control": "no-store" } });
 
   // Fetch every post (page through the API), capped as a safety limit.
   const MAX_POSTS = 500;
@@ -31,9 +31,13 @@ export default async () => {
   while (next && data.length < MAX_POSTS) {
     const res = await fetch(next);
     if (!res.ok) {
-      console.error("Instagram API error", res.status, await res.text());
+      const body = await res.text();
+      console.error("Instagram API error", res.status, body);
       if (data.length) break;
-      return Response.json({ posts: [] }, { status: 502, headers: { "Cache-Control": "no-store" } });
+      let error = `Instagram API ${res.status}`;
+      try { error += ": " + (JSON.parse(body)?.error?.message ?? ""); } catch {}
+      const kind = token.startsWith("EAA") ? "EAA" : token.slice(0, 4);
+      return Response.json({ posts: [], error, tokenType: kind }, { status: 502, headers: { "Cache-Control": "no-store" } });
     }
     const page = (await res.json()) as { data?: Media[]; paging?: { next?: string } };
     data.push(...(page.data ?? []));
