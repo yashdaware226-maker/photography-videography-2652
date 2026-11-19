@@ -535,3 +535,8 @@ section { position: relative; }
   .drone__media--yash { position: sticky; top: 0; height: 100vh; align-self: start; }
   .drone__media--yash .drone__photo { width: 82%; margin: 0 auto; display: block; object-position: 50% 50%; }
 }
+@media (max-width: 600px) {
+  /* Tighter gap between the Services list and the drone photo on phones */
+  .services { padding-bottom: 2.5rem; }
+  .svc__item:last-child { border-bottom: 0; padding-bottom: .5rem; }
+}
