@@ -586,3 +586,7 @@ section { position: relative; }
 @media (min-width: 961px) {
   .dpage__hero { min-height: 100vh; min-height: 100svh; }
 }
+@media (min-width: 961px) {
+  /* /drone page: headline block sits in the vertical middle instead of near the bottom */
+  .dpage__hero { align-items: center; padding-top: 6rem; padding-bottom: 6rem; }
+}
