@@ -489,3 +489,23 @@ section { position: relative; }
 /* #CCF reels in the Work grid: turn the sideways thumbnail back. */
 .tile--rot img { position: absolute; inset: auto; left: 50%; top: 50%; width: var(--rh, 100%); height: var(--rw, 100%); transform: translate(-50%, -50%) rotate(-90deg); }
 .tile--rot:hover img { transform: translate(-50%, -50%) rotate(-90deg) scale(1.06); }
+/* Drone section: Yash's portrait photo, shown whole with a soft blurred fill on wide screens */
+.drone__media--yash { background: #6f7f92 url(/assets/yash-drone-blur.webp) center / cover; }
+.drone__media--yash::before { content: ""; position: absolute; inset: 0; backdrop-filter: blur(30px); background: rgba(60,80,105,.25); }
+.drone__media--yash img { position: relative; object-fit: contain; object-position: center; }
+.dpage__hero .hero__media img { object-position: 60% 55%; animation: none; transform: none; }
+@media (max-width: 960px) {
+  .drone__media--yash img { object-fit: cover; object-position: 55% 52%; }
+  .drone__media--yash { min-height: 70vh; }
+}
+@media (min-width: 961px) {
+  .dpage__hero .hero__media { left: 42%; }
+  .dpage__hero .hero__media img { object-position: 50% 55%; }
+  .dpage__hero .hero__media::after { background: linear-gradient(90deg, var(--ink) 0%, rgba(13,12,10,.35) 30%, rgba(13,12,10,.1) 60%, rgba(13,12,10,.6) 100%), linear-gradient(180deg, rgba(13,12,10,.4), transparent 30%, rgba(13,12,10,.7)); }
+}
+@media (max-width: 960px) {
+  .dpage__hero { min-height: 100svh; }
+  .dpage__hero .hero__media { bottom: 38%; }
+  .dpage__hero .hero__media img { object-position: 50% 40%; }
+  .dpage__hero .hero__media::after { background: linear-gradient(180deg, rgba(13,12,10,.45) 0%, transparent 20%, transparent 55%, var(--ink) 100%); }
+}
