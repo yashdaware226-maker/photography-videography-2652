@@ -18,9 +18,9 @@ export default async () => {
   const MAX_POSTS = 500;
   const data: Media[] = [];
   // Instagram-login tokens (IGAA…) use graph.instagram.com/me; Meta business /
-  // system-user tokens (EAA…) use graph.facebook.com with the Instagram account ID.
+  // system-user tokens (EA…) use graph.facebook.com with the Instagram account ID.
   const igUserId = Netlify.env.get("INSTAGRAM_USER_ID") || "17841404534216952";
-  const first = token.startsWith("EAA")
+  const first = token.startsWith("EA")
     ? new URL(`https://graph.facebook.com/v23.0/${igUserId}/media`)
     : new URL("https://graph.instagram.com/me/media");
   first.searchParams.set("fields", "id,caption,media_type,media_url,thumbnail_url,permalink");
@@ -36,7 +36,7 @@ export default async () => {
       if (data.length) break;
       let error = `Instagram API ${res.status}`;
       try { error += ": " + (JSON.parse(body)?.error?.message ?? ""); } catch {}
-      const kind = token.startsWith("EAA") ? "EAA" : token.slice(0, 4);
+      const kind = token.slice(0, 4);
       return Response.json({ posts: [], error, tokenType: kind }, { status: 502, headers: { "Cache-Control": "no-store" } });
     }
     const page = (await res.json()) as { data?: Media[]; paging?: { next?: string } };
