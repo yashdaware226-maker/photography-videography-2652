@@ -54,6 +54,7 @@
       video = document.createElement("video");
       Object.assign(video, { src: it.src, muted, playsInline: true, autoplay: inView, preload: "metadata", poster: it.thumb });
       video.setAttribute("playsinline", "");
+      video.classList.add("is-rotated");
       video.addEventListener("ended", next);
       video.addEventListener("error", () => items.length > 1 && setTimeout(next, 800));
       screen.appendChild(video);
@@ -116,7 +117,7 @@
     }
     if (!items.length) return;
     strip.innerHTML = items
-      .map((it, n) => `<button class="films__thumb" role="listitem" data-i="${n}" aria-label="Play ${it.title.replace(/"/g, "&quot;")}"><img loading="lazy" src="${it.thumb}" alt="" /><span>${it.type === "yt" ? "YOUTUBE" : "REEL"}</span></button>`)
+      .map((it, n) => `<button class="films__thumb" role="listitem" data-i="${n}" aria-label="Play ${it.title.replace(/"/g, "&quot;")}"><img loading="lazy" src="${it.thumb}" alt=""${it.type === "ig" ? ' class="is-rotated"' : ""} /><span>${it.type === "yt" ? "YOUTUBE" : "REEL"}</span></button>`)
       .join("");
     strip.addEventListener("click", (e) => { const t = e.target.closest(".films__thumb"); if (t) play(+t.dataset.i); });
     section.hidden = false;

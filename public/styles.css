@@ -391,3 +391,14 @@ section { position: relative; }
 .films__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .films__thumb span { position: absolute; left: .4rem; bottom: .35rem; font-family: var(--mono); font-size: .6rem; letter-spacing: .1em; color: var(--cream); background: rgba(13,12,10,.7); padding: .15rem .4rem; border-radius: 3px; }
 .films__thumb:hover, .films__thumb.is-active { opacity: 1; border-color: var(--marigold); }
+
+/* Reels shot horizontally but posted rotated to vertical: turn them back to landscape. */
+.films { --reel-rot: -90deg; }
+.films__screen video.is-rotated,
+.films__thumb img.is-rotated {
+  inset: auto; left: 50%; top: 50%;
+  width: 56.25%; height: 177.78%;
+  transform: translate(-50%, -50%) rotate(var(--reel-rot));
+}
+.films__screen video.is-rotated { object-fit: cover; }
+.films__thumb img.is-rotated { position: absolute; }
