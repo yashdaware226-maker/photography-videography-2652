@@ -4,7 +4,8 @@ import { getToken, saveToken } from "../lib/instagram.mts";
 // Instagram long-lived tokens expire after 60 days; refresh weekly and store the new one.
 export default async () => {
   const token = await getToken();
-  if (!token) return;
+  // System-user tokens (EAA…) never expire, so only Instagram-login tokens need refreshing.
+  if (!token || token.startsWith("EAA")) return;
   const url = new URL("https://graph.instagram.com/refresh_access_token");
   url.searchParams.set("grant_type", "ig_refresh_token");
   url.searchParams.set("access_token", token);

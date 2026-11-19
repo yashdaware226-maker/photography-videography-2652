@@ -17,7 +17,12 @@ export default async () => {
   // Fetch every post (page through the API), capped as a safety limit.
   const MAX_POSTS = 500;
   const data: Media[] = [];
-  const first = new URL("https://graph.instagram.com/me/media");
+  // Instagram-login tokens (IGAA…) use graph.instagram.com/me; Meta business /
+  // system-user tokens (EAA…) use graph.facebook.com with the Instagram account ID.
+  const igUserId = Netlify.env.get("INSTAGRAM_USER_ID") || "17841404534216952";
+  const first = token.startsWith("EAA")
+    ? new URL(`https://graph.facebook.com/v23.0/${igUserId}/media`)
+    : new URL("https://graph.instagram.com/me/media");
   first.searchParams.set("fields", "id,caption,media_type,media_url,thumbnail_url,permalink");
   first.searchParams.set("limit", "100");
   first.searchParams.set("access_token", token);
