@@ -82,19 +82,23 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
 
   // Instagram feed: replace the sample frames with the latest posts when available
+  // Only shoot posts appear in Work: captions must mention one of these.
   const CATS = [
-    ["prewedding", /pre[\s-]?wedding|prewed|couple ?shoot/i, "Pre-wedding"],
-    ["wedding", /wedding|shaadi|shadi|phera|haldi|mehendi|mehndi|sangeet|bride|groom|reception|vivah|lagna/i, "Wedding"],
-    ["event", /event|birthday|engagement|ring ceremony|d[eé]cor|baby ?shower|anniversary|corporate/i, "Event"],
+    ["prewedding", /pre[\s-]?wedd?ing|prewed|couple ?shoot/i, "Pre-wedding"],
+    ["wedding", /wedd?ing|shaadi|shadi|lagna|vivah|haldi|mehe?ndi|mehandi|sangeet|bride|groom|reception|engagement|phera/i, "Wedding"],
+    ["event", /b'?day|birthday/i, "Birthday"],
   ];
   const LAYOUT = ["tile--tall", "", "", "tile--wide", "", "tile--tall", "", "", "", "", "tile--wide"];
   const esc = (str) => str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   fetch("/api/instagram")
     .then((r) => (r.ok ? r.json() : { posts: [] }))
     .then(({ posts }) => {
-      if (!posts || posts.length < 4) return;
-      grid.innerHTML = posts.map((p, i) => {
-        const cat = CATS.find(([, re]) => re.test(p.caption));
+      const shoots = (posts || [])
+        .map((p) => ({ ...p, cat: CATS.find(([, re]) => re.test(p.caption)) }))
+        .filter((p) => p.cat);
+      if (!shoots.length) return;
+      grid.innerHTML = shoots.map((p, i) => {
+        const cat = p.cat;
         const title = (p.caption.split("\n")[0].replace(/#\S+/g, "").trim() || "On Instagram").slice(0, 60);
         return `<figure class="tile tile--ig ${LAYOUT[i % LAYOUT.length]}" data-cat="${cat ? cat[0] : "other"}" data-permalink="${esc(p.permalink)}">
           <img loading="lazy" src="${esc(p.image)}" alt="${esc(title)} — Instagram post by The Cre8ive YD" />
