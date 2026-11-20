@@ -82,7 +82,7 @@
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !lb.hidden) closeLb(); });
 
   // Instagram feed: replace the sample frames with the latest posts when available
-  // Only shoot posts appear in Work: captions must mention one of these.
+  // Only shoot photo posts appear in Work (no reels/videos): captions must mention one of these.
   const CATS = [
     ["prewedding", /pre[\s-]?wedd?ing|prewed|couple ?shoot/i, "Pre-wedding"],
     ["wedding", /wedd?ing|shaadi|shadi|lagna|vivah|haldi|mehe?ndi|mehandi|sangeet|bride|groom|reception|engagement|phera/i, "Wedding"],
@@ -95,7 +95,7 @@
   window.igFeed
     .then(({ posts }) => {
       const shoots = (posts || [])
-        .filter((p) => !/#bts\b/i.test(p.caption))
+        .filter((p) => !p.video && !/#bts\b/i.test(p.caption))
         .map((p) => ({ ...p, cat: CATS.find(([, re]) => re.test(p.caption)) }))
         .filter((p) => p.cat);
       if (!shoots.length) return;
