@@ -590,3 +590,13 @@ section { position: relative; }
   /* /drone page: headline block sits in the vertical middle instead of near the bottom */
   .dpage__hero { align-items: center; padding-top: 6rem; padding-bottom: 6rem; }
 }
+
+/* Homepage hero on phones: show the full scene (Yash filming + the couple) in a top frame, text below */
+@media (max-width: 600px) {
+  .hero { --hero-ph: min(60svh, 125vw); min-height: 100svh; padding-top: calc(var(--hero-ph) - 2.5rem); background: var(--ink); }
+  .hero__media { bottom: auto; height: var(--hero-ph); overflow: hidden; }
+  .hero__media img { object-position: 43% 50%; transform: scale(1.03); animation: heroZoomM 10s var(--ease) forwards; }
+  .hero__media::after { background: linear-gradient(180deg, rgba(13,12,10,.55) 0%, rgba(13,12,10,.18) 28%, rgba(13,12,10,0) 45%, rgba(13,12,10,0) 68%, var(--ink) 97%); }
+  .viewfinder { top: 5.25rem; bottom: auto; height: calc(var(--hero-ph) - 9rem); }
+}
+@keyframes heroZoomM { to { transform: scale(1); } }
