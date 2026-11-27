@@ -58,6 +58,7 @@
       filterBtns.forEach((b) => { b.classList.toggle("is-active", b === btn); b.setAttribute("aria-selected", b === btn); });
       activeFilter = btn.dataset.filter;
       applyFilter();
+      queueFit();
     })
   );
 
@@ -74,8 +75,36 @@
     lb.hidden = false;
     document.body.style.overflow = "hidden";
   };
-  const prepTiles = () => grid.querySelectorAll(".tile").forEach((t) => { t.tabIndex = 0; });
+  // Photo layout (all devices): Pinterest-style columns. Each tile keeps its photo's
+  // shape, and the next photo moves up to sit right under it, so a column never has gaps.
+  const ROW = 4;
+  const ratioOf = (t) => {
+    const img = t.querySelector("img");
+    const r = img && img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0.8;
+    return t.classList.contains("tile--rot") ? 1 / r : r;
+  };
+  const fitGrid = () => {
+    grid.classList.add("is-fit");
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.rowGap) || 0;
+    const cols = cs.gridTemplateColumns.split(" ").length;
+    const colW = (grid.clientWidth - gap * (cols - 1)) / cols;
+    grid.querySelectorAll(".tile").forEach((t) => {
+      t.style.setProperty("--rows", Math.max(1, Math.round((colW / ratioOf(t) + gap) / (ROW + gap))));
+    });
+  };
+  let fitQueued = false;
+  const queueFit = () => { if (!fitQueued) { fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fitGrid(); }); } };
+  const prepTiles = () => {
+    grid.querySelectorAll(".tile").forEach((t) => {
+      t.tabIndex = 0;
+      const img = t.querySelector("img");
+      if (img && !img.complete) img.addEventListener("load", queueFit, { once: true });
+    });
+    fitGrid();
+  };
   prepTiles();
+  window.addEventListener("resize", queueFit);
   grid.addEventListener("click", (e) => { const t = e.target.closest(".tile"); if (t) openTile(t); });
   grid.addEventListener("keydown", (e) => { const t = e.target.closest(".tile"); if (t && e.key === "Enter") openTile(t); });
   lb.addEventListener("click", (e) => { if (e.target !== lbImg && e.target !== lbLink) closeLb(); });
@@ -118,6 +147,7 @@
       });
       sizeRot();
       window.addEventListener("resize", sizeRot);
+      grid.querySelectorAll("img").forEach((img) => img.addEventListener("load", sizeRot, { once: true }));
       grid.querySelectorAll(".tile").forEach((t) => { t.classList.add("sr"); io.observe(t); });
     })
     .catch(() => {});
