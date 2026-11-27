@@ -1,0 +1,6 @@
+# https://thecre8iveyd.com/robots.txt
+User-agent: *
+Disallow: /.netlify/functions/
+Disallow: /*?type=
+
+Sitemap: https://thecre8iveyd.com/sitemap.xml
