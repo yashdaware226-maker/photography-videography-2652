@@ -75,63 +75,23 @@
     lb.hidden = false;
     document.body.style.overflow = "hidden";
   };
-  // Photo layout. Phones: 2-column masonry (each tile keeps its photo shape).
-  // Tablets/laptops: justified rows — every photo shown whole, rows share one height,
-  // and each row lines up flush with both edges (last row stays at normal height).
+  // Photo layout (all devices): Pinterest-style columns. Each tile keeps its photo's
+  // shape, and the next photo moves up to sit right under it, so a column never has gaps.
   const ROW = 4;
-  const phone = window.matchMedia("(max-width: 600px)");
   const ratioOf = (t) => {
     const img = t.querySelector("img");
-    let r = img && img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0.8;
+    const r = img && img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0.8;
     return t.classList.contains("tile--rot") ? 1 / r : r;
   };
-  const clearJustify = (t) => { t.style.width = ""; t.style.height = ""; };
   const fitGrid = () => {
-    const tiles = [...grid.querySelectorAll(".tile")];
-    if (phone.matches) {
-      grid.classList.remove("is-just");
-      grid.classList.add("is-fit");
-      tiles.forEach(clearJustify);
-      const cs = getComputedStyle(grid);
-      const gap = parseFloat(cs.rowGap) || 0;
-      const cols = cs.gridTemplateColumns.split(" ").length;
-      const colW = (grid.clientWidth - gap * (cols - 1)) / cols;
-      tiles.forEach((t) => {
-        t.style.setProperty("--cols", 1);
-        t.style.setProperty("--rows", Math.max(1, Math.round((colW / ratioOf(t) + gap) / (ROW + gap))));
-      });
-      return;
-    }
-    grid.classList.remove("is-fit");
-    grid.classList.add("is-just");
+    grid.classList.add("is-fit");
     const cs = getComputedStyle(grid);
-    const W = Math.floor(grid.getBoundingClientRect().width - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0));
-    const gap = parseFloat(cs.columnGap) || 0;
-    const target = W >= 1200 ? 360 : W >= 900 ? 300 : 240;
-    const visible = tiles.filter((t) => !t.classList.contains("is-hidden"));
-    let row = [];
-    let sum = 0;
-    const place = (items, h, fill) => {
-      let used = 0;
-      items.forEach((t, i) => {
-        const last = fill && i === items.length - 1;
-        const w = last ? Math.floor(W - used - gap * (items.length - 1)) : Math.floor(ratioOf(t) * h);
-        used += w;
-        t.style.width = w + "px";
-        t.style.height = Math.round(h) + "px";
-      });
-    };
-    visible.forEach((t) => {
-      row.push(t);
-      sum += ratioOf(t);
-      const avail = W - gap * (row.length - 1);
-      if (sum * target >= avail) {
-        place(row, avail / sum, true);
-        row = [];
-        sum = 0;
-      }
+    const gap = parseFloat(cs.rowGap) || 0;
+    const cols = cs.gridTemplateColumns.split(" ").length;
+    const colW = (grid.clientWidth - gap * (cols - 1)) / cols;
+    grid.querySelectorAll(".tile").forEach((t) => {
+      t.style.setProperty("--rows", Math.max(1, Math.round((colW / ratioOf(t) + gap) / (ROW + gap))));
     });
-    if (row.length) place(row, target, false);
   };
   let fitQueued = false;
   const queueFit = () => { if (!fitQueued) { fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fitGrid(); }); } };
@@ -145,7 +105,6 @@
   };
   prepTiles();
   window.addEventListener("resize", queueFit);
-  phone.addEventListener("change", queueFit);
   grid.addEventListener("click", (e) => { const t = e.target.closest(".tile"); if (t) openTile(t); });
   grid.addEventListener("keydown", (e) => { const t = e.target.closest(".tile"); if (t && e.key === "Enter") openTile(t); });
   lb.addEventListener("click", (e) => { if (e.target !== lbImg && e.target !== lbLink) closeLb(); });
