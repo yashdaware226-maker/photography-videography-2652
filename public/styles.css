@@ -600,3 +600,8 @@ section { position: relative; }
   .viewfinder { top: 5.25rem; bottom: auto; height: calc(var(--hero-ph) - 9rem); }
 }
 @keyframes heroZoomM { to { transform: scale(1); } }
+
+/* Work grid: each tile takes the photo's own shape (no awkward crops). */
+.grid.is-fit { grid-auto-rows: 4px; }
+.grid.is-fit .tile { grid-row: span var(--rows, 60); grid-column: span var(--cols, 1); }
+.grid.is-fit .tile--tall, .grid.is-fit .tile--wide { grid-row: span var(--rows, 60); grid-column: span var(--cols, 1); }

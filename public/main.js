@@ -74,8 +74,37 @@
     lb.hidden = false;
     document.body.style.overflow = "hidden";
   };
-  const prepTiles = () => grid.querySelectorAll(".tile").forEach((t) => { t.tabIndex = 0; });
+  // Size every tile to its photo: portrait stays tall, landscape gets two columns on wide screens.
+  const ROW = 4;
+  const fitTile = (t, cols, colW, gap) => {
+    const img = t.querySelector("img");
+    let ratio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 0.8;
+    if (t.classList.contains("tile--rot")) ratio = 1 / ratio;
+    const span = ratio > 1.3 && cols >= 3 ? 2 : 1;
+    const w = colW * span + gap * (span - 1);
+    t.style.setProperty("--cols", span);
+    t.style.setProperty("--rows", Math.max(1, Math.round((w / ratio + gap) / (ROW + gap))));
+  };
+  const fitGrid = () => {
+    grid.classList.add("is-fit");
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.rowGap) || 0;
+    const cols = cs.gridTemplateColumns.split(" ").length;
+    const colW = (grid.clientWidth - gap * (cols - 1)) / cols;
+    grid.querySelectorAll(".tile").forEach((t) => fitTile(t, cols, colW, gap));
+  };
+  let fitQueued = false;
+  const queueFit = () => { if (!fitQueued) { fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fitGrid(); }); } };
+  const prepTiles = () => {
+    grid.querySelectorAll(".tile").forEach((t) => {
+      t.tabIndex = 0;
+      const img = t.querySelector("img");
+      if (img && !img.complete) img.addEventListener("load", queueFit, { once: true });
+    });
+    fitGrid();
+  };
   prepTiles();
+  window.addEventListener("resize", queueFit);
   grid.addEventListener("click", (e) => { const t = e.target.closest(".tile"); if (t) openTile(t); });
   grid.addEventListener("keydown", (e) => { const t = e.target.closest(".tile"); if (t && e.key === "Enter") openTile(t); });
   lb.addEventListener("click", (e) => { if (e.target !== lbImg && e.target !== lbLink) closeLb(); });
@@ -118,6 +147,7 @@
       });
       sizeRot();
       window.addEventListener("resize", sizeRot);
+      grid.querySelectorAll("img").forEach((img) => img.addEventListener("load", sizeRot, { once: true }));
       grid.querySelectorAll(".tile").forEach((t) => { t.classList.add("sr"); io.observe(t); });
     })
     .catch(() => {});
