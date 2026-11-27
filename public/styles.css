@@ -605,3 +605,10 @@ section { position: relative; }
 .grid.is-fit { grid-auto-rows: 4px; }
 .grid.is-fit .tile, .grid.is-fit .tile--tall, .grid.is-fit .tile--wide { grid-row: span var(--rows, 60); grid-column: auto; }
 @media (min-width: 601px) and (max-width: 960px) { .grid.is-fit { grid-template-columns: repeat(3, 1fr); } }
+
+/* Work captions: hidden on the grid, shown only when a photo is opened. */
+.grid .tile figcaption { display: none; }
+.lightbox img { max-height: 74vh; }
+.lightbox__cap[hidden] { display: none; }
+.lightbox__cap { margin: 0; max-width: min(90vw, 760px); text-align: center; font-family: var(--display); font-style: italic; font-size: clamp(1rem, 2.2vw, 1.3rem); color: var(--cream); line-height: 1.4; }
+.lightbox__cap span { display: block; margin-top: .4rem; font-family: var(--mono); font-style: normal; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--marigold); }

@@ -65,11 +65,15 @@
   const lb = document.querySelector(".lightbox");
   const lbImg = lb.querySelector("img");
   const lbLink = lb.querySelector(".lightbox__ig");
+  const lbCap = lb.querySelector(".lightbox__cap");
   const closeLb = () => { lb.hidden = true; document.body.style.overflow = ""; };
   const openTile = (t) => {
     const img = t.querySelector("img");
     lbImg.src = img.src.includes("images.unsplash.com") ? img.src.replace(/w=\d+/, "w=2000") : img.src;
     lbImg.alt = img.alt;
+    const cap = t.querySelector("figcaption");
+    lbCap.innerHTML = cap ? cap.innerHTML.replace(/\s*·\s*(?=<span)/, "") : "";
+    lbCap.hidden = !cap;
     lbLink.hidden = !t.dataset.permalink;
     if (t.dataset.permalink) lbLink.href = t.dataset.permalink;
     lb.hidden = false;
