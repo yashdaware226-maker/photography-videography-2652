@@ -605,3 +605,5 @@ section { position: relative; }
 .grid.is-fit { grid-auto-rows: 4px; }
 .grid.is-fit .tile { grid-row: span var(--rows, 60); grid-column: span var(--cols, 1); }
 .grid.is-fit .tile--tall, .grid.is-fit .tile--wide { grid-row: span var(--rows, 60); grid-column: span var(--cols, 1); }
+.grid.is-just { display: flex; flex-wrap: wrap; align-items: flex-start; }
+.grid.is-just .tile { flex: none; height: 300px; }
